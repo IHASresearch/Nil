@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7f3">
+  <title>ParkLens | Otopark Analizi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="ParkLens ana sayfa">
+        <span class="brand-mark"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M8 28V8h11.2c5.5 0 8.8 3 8.8 8s-3.3 8-8.8 8H15v4H8Zm7-10h4.3c1.8 0 2.7-.7 2.7-2s-.9-2-2.7-2H15v4Z"/><circle cx="27.5" cy="27.5" r="4.5"/></svg></span>
+        <span class="brand-name">park<span>lens</span></span>
+      </a>
+      <div class="sidebar-label">ÇALIŞMA ALANI</div>
+      <a class="nav-item active" href="#upload"><span class="nav-icon">◈</span> Analiz <span class="nav-dot"></span></a>
+      <a class="nav-item" href="#results"><span class="nav-icon">▤</span> Sonuçlar</a>
+      <div class="sidebar-bottom">
+        <div class="model-card"><span class="status-pulse"></span><div><b>YOLO modeli</b><small>best.pt · Hazır</small></div><span class="check">✓</span></div>
+        <div class="sidebar-foot">Otopark alanı tespit sistemi<br><span>Yerel çalışma alanı</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar"><div class="crumb">Çalışma alanı <span>/</span> <b>Otopark analizi</b></div><div class="top-actions"><span class="local-badge"><i></i> Yerel sunucu</span><div class="avatar">PL</div></div></header>
+      <section class="page-heading" id="upload">
+        <div><div class="eyebrow"><span></span> GÖRÜNTÜ İŞLEME</div><h1>Otoparkını analiz et.</h1><p>Fotoğraf ve videoları yükle, boş ve dolu park alanlarını otomatik tespit et.</p></div>
+        <div class="heading-note"><span class="note-icon">✳</span><span>Dosyalarınız bu bilgisayarda<br><b>işlenir ve saklanır.</b></span></div>
+      </section>
+
+      <section class="workspace-grid">
+        <div class="panel upload-panel">
+          <div class="panel-heading"><div><div class="step-label">01 <span>·</span> DOSYALARI SEÇ</div><h2>Görsel veya video ekle</h2></div><span class="file-count" id="fileCount">0 dosya</span></div>
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <input id="fileInput" type="file" accept="image/*,video/*" multiple>
+            <span class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v4h14v-4"/></svg></span>
+            <strong>Dosyaları buraya sürükleyip bırak</strong>
+            <span class="drop-sub">veya <em>bilgisayarından seç</em></span>
+            <span class="formats">JPG, PNG, WEBP, MP4, MOV, AVI <i>·</i> en fazla 500 MB</span>
+          </label>
+          <div class="selected-files" id="selectedFiles"></div>
+          <div class="settings">
+            <div class="step-label">02 <span>·</span> ANALİZ AYARLARI</div>
+            <div class="setting-row"><div class="setting-copy"><b>Görüntü boyutu</b><small>Yüksek değer küçük alanlarda ayrıntıyı artırır.</small></div><div class="select-wrap"><select id="imgsz"><option value="640">640 px</option><option value="800" selected>800 px · Dengeli</option><option value="1024">1024 px · Ayrıntılı</option><option value="1280">1280 px · Uzak çekim</option></select><span>⌄</span></div></div>
+            <div class="setting-row confidence-row"><div class="setting-copy"><b>Güven eşiği <span class="value-pill" id="confValue">0.35</span></b><small>Düşük değer daha fazla tahmin gösterir.</small></div><input id="conf" type="range" min="0.10" max="0.70" step="0.05" value="0.35"></div>
+          </div>
+          <div class="action-row"><span class="privacy"><span>♧</span> Görselleriniz dışarı gönderilmez</span><button class="primary-button" id="startButton" disabled><span>Analizi başlat</span><span class="button-arrow">↗</span></button></div>
+          <div class="alert" id="errorBox" role="alert"></div>
+        </div>
+
+        <aside class="side-column">
+          <div class="panel how-panel"><div class="step-label">NASIL ÇALIŞIR?</div><h3>Üç adımda sonuç</h3>
+            <div class="how-step"><span class="how-number">1</span><div><b>Dosyanı ekle</b><small>Birden fazla fotoğraf ve video seçebilirsin.</small></div></div>
+            <div class="how-step"><span class="how-number">2</span><div><b>Model tarasın</b><small>YOLO boş ve dolu alanları bulsun.</small></div></div>
+            <div class="how-step"><span class="how-number">3</span><div><b>Sonuçları incele</b><small>İşlenmiş dosyaları görüntüle veya indir.</small></div></div>
+          </div>
+          <div class="legend-card"><div class="legend-title">TESPİT ETİKETLERİ</div><div class="legend-item"><span class="legend-square empty"></span><span>Boş park yeri</span><span class="legend-tag">EMPTY</span></div><div class="legend-item"><span class="legend-square occupied"></span><span>Dolu park yeri</span><span class="legend-tag">OCCUPIED</span></div></div>
+          <div class="tip-card"><span>✦</span><p><b>İpucu</b><br>Uzak çekimlerde 1024 veya 1280 px seçerek daha fazla ayrıntı yakalayabilirsin.</p></div>
+        </aside>
+      </section>
+
+      <section class="results-section" id="results">
+        <div class="results-heading"><div><div class="step-label">03 <span>·</span> ÇIKTILAR</div><h2>Analiz sonuçları</h2></div><span class="result-status" id="resultStatus">Henüz analiz yok</span></div>
+        <div class="progress-card" id="progressCard"><div class="progress-top"><div class="spinner"></div><div><b id="progressTitle">Analiz hazırlanıyor</b><small id="progressText">Dosyalar modele gönderiliyor…</small></div><span class="progress-percent" id="progressPercent">0%</span></div><div class="progress-track"><span id="progressBar"></span></div></div>
+        <div class="results-grid" id="resultsGrid"><div class="empty-state"><span class="empty-symbol">▧</span><b>Sonuçlar burada görünecek</b><span>Bir fotoğraf veya video yükleyip analizi başlat.</span></div></div>
+      </section>
+      <footer class="footer"><span>ParkLens <i>·</i> YOLO otopark tespit arayüzü</span><span>Yerel olarak çalışır</span></footer>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
